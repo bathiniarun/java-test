@@ -13,6 +13,15 @@ pipeline {
             }
         }
 
+        stages {
+          stage("SonarQube analysis") {
+            steps {
+              withSonarQubeEnv('bathiniarun') {
+                sh 'mvn clean package sonar:sonar'
+              }
+            }
+          }
+
         stage('Push') {
             steps {
                 echo 'Push'
