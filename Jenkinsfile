@@ -17,7 +17,7 @@ pipeline {
     stage('Push to S3') {
       steps {
         // Push the built JAR file to an S3 bucket
-        sh 'aws s3 cp target/java-test-1.jar s3://redbull-f1/'
+        sh 'aws s3 cp target/JAVA-TEST-1.jar s3://redbull-f1/'
       }
     }
     
