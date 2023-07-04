@@ -11,14 +11,7 @@ stage('Build') {
         sh 'mvn clean package'
       }
     }
-    
-    stage('Test') {
-      steps {
-        // Execute unit tests
-        echo 'Test'
-        sh 'mvn test'
-      }
-    }
+
 
         stage('Push') {
             steps {
