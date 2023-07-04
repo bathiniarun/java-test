@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        function_name = 'java-simple'
+        function_name = 'java-test'
     }
 stages{
 stage('Build') {
