@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        function_name = 'aws-1-pepiline'
+        function_name = 'java-simple'
     }
 
     stages {
@@ -12,7 +12,7 @@ pipeline {
                 sh 'mvn package'
             }
         }
-        
+
         stage('Push') {
             steps {
                 echo 'Push'
