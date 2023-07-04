@@ -5,13 +5,20 @@ pipeline {
         function_name = 'java-simple'
     }
 
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Build'
-                sh 'mvn package'
-            }
-        }
+stage('Build') {
+      steps {
+        // Build the Java project using Maven
+        sh 'mvn clean package'
+      }
+    }
+    
+    stage('Test') {
+      steps {
+        // Execute unit tests
+        echo 'Test'
+        sh 'mvn test'
+      }
+    }
 
         stage('Push') {
             steps {
