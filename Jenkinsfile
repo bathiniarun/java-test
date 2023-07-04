@@ -1,129 +1,35 @@
 pipeline {
-    agent any
-
-    environment {
-        function_name = 'java-test'
+  agent any
+  environment {
+        function_name = 'aws-1-pepiline'
     }
 
-     parameters {
-        string(name: 'RollbackVersion', description: 'Please enter rollback version')
-        choice(
-            choices: ['Dev', 'Test', 'Prod'],
-            name: 'Environment',
-            description : 'Please select environment'
-        )
+  stages {
+    stage('Build') {
+        echo 'Build'
+        // Build the Java project using Maven
+        sh 'mvn clean package'
+      }
     }
-
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Build'
-                sh 'mvn package'
-            }
+    
+    stage('Push to S3') {
+      steps {
+        echo 'Push'
+        // Push the built JAR file to an S3 bucket
+        {
+          sh 'aws s3 cp target/your-project.jar s3://redbull-f1/'
         }
-
-        stage('Sonar Qube Analysis') {
-            agent any
-            when {
-                anyOf {
-                    branch  'feature/*'
-                    branch 'main'
-                }
-            }
-            
-            steps {
-                withSonarQubeEnv(installationName:'sonar', credentialsId: 'sonar') {
-                 
-                    sh  'mvn sonar:sonar'
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                script {
-                    try {
-                        timeout(time: 10, unit: 'MINUTES') {
-                            waitForQualityGate abortPipeline: true
-                        }
-                    }
-                    catch (Exception ex) {
-                    }
-                }
-            }
-        }
-
-        stage('Push') {
-            steps {
-                echo 'Pushed'
-
-                sh 'aws s3 cp target/sample-1.0.3.jar s3://s3-java-samples'
-            }
-        }
-        //CI ended
-        //CD started
-
-       stage('Deployment') {
-            parallel {
-                stage('Deploy to Dev') {
-                steps {
-                    script {
-                    def functionName = 'java-dev-env'
-                    echo 'Build'
-                    sh "aws lambda update-function-code --function-name $functionName --s3-bucket redbull-f1 --s3-key sample-1.0.3.jar --region us-east-1"
-                    }
-                }
-                }
-
-            stage('Deploy to Test') {
-            steps {
-                script {
-                def functionName = 'java-test-env'
-                echo 'Build'
-                sh "aws lambda update-function-code --function-name $functionName --s3-bucket redbull-f1 --s3-key sample-1.0.3.jar --region us-east-1"
-                }
-            }
-            }
-        }
+      }
     }
-
-
-
-        stage('Deployement to Prod') {
-            when {
-                expression { return params.Environment == 'Prod'}
-            }
-            steps{
-                input(
-                    message: "Are we good to go for deployment?"
-                )
-            }
-           
+    
+    stage('Deploy to Lambda') {
+      steps {
+        echo 'Deploy'
+        // Deploy the JAR file to AWS Lambda
+         {
+          sh 'aws lambda update-function-code --function-name aws-1-pepiline --s3-bucket redbull-f1 --s3-key java-test-1.jar'
         }
-
-        stage('Release to Prod'){
-            when{
-                branch "main"
-            }
-             steps{
-                 sh "aws lambda update-function-code --function-name $function_name --s3-bucket redbull-f1 --s3-key sample-1.0.3.jar --region us-east-1"
-            }
-        }
-
+      }
     }
-        post {
-        always {
-            echo "${env.BUILD_ID}"
-            echo "${BRANCH_NAME}"
-            echo "${JENKINS_URL}"
+  }
 
-        }
-
-        failure {
-            echo 'failed'
-        }
-        aborted {
-            echo 'aborted'
-        }
-    }
-}
