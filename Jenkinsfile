@@ -4,7 +4,7 @@ pipeline {
     environment {
         function_name = 'java-simple'
     }
-
+stages{
 stage('Build') {
       steps {
         // Build the Java project using Maven
@@ -28,3 +28,4 @@ stage('Build') {
             }
         }
     }
+}
