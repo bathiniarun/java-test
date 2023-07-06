@@ -13,6 +13,15 @@ pipeline {
         sh 'mvn clean package'
       }
     }
+
+    stage("SonarQube analysis") {
+            agent any
+            steps {
+              withSonarQubeEnv('sonar') {
+                sh 'mvn sonar:sonar'
+              }
+            }
+          }
     
     stage('Push to S3') {
       steps {
