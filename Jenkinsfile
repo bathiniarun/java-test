@@ -17,7 +17,7 @@ pipeline {
     stage("SonarQube analysis") {
             agent any
             steps {
-              withSonarQubeEnv('sonar') {
+              withSonarQubeEnv('bathiniarun') {
                 sh 'mvn sonar:sonar'
               }
             }
