@@ -24,7 +24,7 @@ pipeline {
     stage('Deploy to Lambda') {
       steps {
         // Deploy the JAR file to AWS Lambda
-        sh 'aws lambda update-function-code --function-name aws-1-pepiline --s3-bucket redbull-f1 --s3-key sample-1.0.3.jar --us-east-1'
+        sh 'aws lambda update-function-code --function-name aws-1-pepiline --region us-east-1 --s3-bucket redbull-f1 --s3-key sample-1.0.3.jar'
       }
     }
   }
